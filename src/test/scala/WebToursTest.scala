@@ -32,7 +32,6 @@ class WebToursTest extends Simulation {
     )
       .pause(2)
   }
-
   object Login {
     val login = exec(http("user_login")
       .post("/cgi-bin/login.pl")
@@ -48,7 +47,6 @@ class WebToursTest extends Simulation {
     )
       .pause(2)
   }
-
   object Reservations {
     val reservations = exec(http("findFlight_choose")
       .post("/cgi-bin/reservations.pl")
