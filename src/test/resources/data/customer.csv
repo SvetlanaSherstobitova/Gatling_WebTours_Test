@@ -1,0 +1,8 @@
+firstName,lastName,address1,address2,creditCard,expDate
+Jojo,Bean,Pushkinskaya 179,Kazan,987654321,10/24
+
+
+", "")
+pass1", "Jojo Bean")
+creditCard", "987654321
+expDate", "10/24")

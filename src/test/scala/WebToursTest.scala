@@ -39,9 +39,6 @@ class WebToursTest extends Simulation {
       .formParam("userSession", "#{SessionId}")
       .formParam("username", "jojo")
       .formParam("password", "bean")
-      .formParam("login.x", "46")
-      .formParam("login.y", "15")
-      .formParam("JSFormSubmit", "off")
       .resources(
         http("findFlight_open")
           .get("/cgi-bin/nav.pl?page=menu&in=home"),
