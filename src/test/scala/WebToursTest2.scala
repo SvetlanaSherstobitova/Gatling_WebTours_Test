@@ -4,7 +4,10 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit.DAYS
 import scala.util.Random
+
 
 class WebToursTest2 extends Simulation {
 
@@ -18,6 +21,10 @@ class WebToursTest2 extends Simulation {
   val csvCustomerFeeder = csv("data/customer.csv").circular
   val csvOutboundFlightFeeder = csv("data/outboundFlight1.csv").circular
 
+  val start = LocalDate.of(2023, 5, 1)
+  val end   = LocalDate.of(2023, 6, 29)
+  val departDate = LocalDate.ofEpochDay(Random.between(start.toEpochDay, end.toEpochDay))
+  val returnDate = LocalDate.ofEpochDay(Random.between(start.toEpochDay+1, end.toEpochDay+1))
   object HomePage {
     def mainPage = {
       exec(http("Load Home Page")
@@ -77,9 +84,9 @@ class WebToursTest2 extends Simulation {
           .post("/cgi-bin/reservations.pl")
           .formParam("advanceDiscount", "0")
           .formParam("depart", "#{depart}")
-          .formParam("departDate", "#{departDate}")
+          .formParam("departDate", departDate)
           .formParam("arrive", "#{arrive}")
-          .formParam("returnDate", "#{returnDate}")
+          .formParam("returnDate", returnDate)
           .formParam("numPassengers", "#{numPassengers}")
           .formParam("seatPref", "#{seatPref}")
           .formParam("seatType", "#{seatType}")
