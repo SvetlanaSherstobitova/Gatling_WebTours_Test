@@ -1,11 +1,11 @@
-depart,arrive,seatType,seatPref,findFlightsx,findFlightsy,numPassengers
-Frankfurt,Denver,First,Aisle,29,4,1
-London,Frankfurt,Business,Window,28,6,2
-Los Angeles,London,Coach,None,15,7,3
-Paris,Los Angeles,First,Aisle,12,9,4
-Portland,Paris,Business,Window,11,14,5
-San Francisco,Portland,Coach,None,26,3,6
-Seattle,San Francisco,First,Aisle,25,2,7
-Sydney,Seattle,Business,Window,22,8,8
-Zurich,Sydney,Coach,None,24,9,9
-Denver,Zurich,Business,Window,23,1,5
+depart,arrive,seatType,seatPref,findFlightsx,findFlightsy,numPassengers,departDate,returnDate
+Frankfurt,Denver,First,Aisle,29,4,1б,10/11/2023,10/12/2023,
+London,Frankfurt,Business,Window,28,6,2,12/11/2023,12/12/2023,
+Los Angeles,London,Coach,None,15,7,3,13/11/2023,13/12/2023,
+Paris,Los Angeles,First,Aisle,12,9,4,14/11/2023,14/12/2023,
+Portland,Paris,Business,Window,11,14,5,15/11/2023,15/12/2023,
+San Francisco,Portland,Coach,None,26,3,6,16/11/2023,16/12/2023,
+Seattle,San Francisco,First,Aisle,25,2,7,17/11/2023,17/12/2023,
+Sydney,Seattle,Business,Window,22,8,8,18/11/2023,18/12/2023,
+Zurich,Sydney,Coach,None,24,9,9,19/11/2023,19/12/2023,
+Denver,Zurich,Business,Window,23,1,5,11/11/2023,11/12/2023,
