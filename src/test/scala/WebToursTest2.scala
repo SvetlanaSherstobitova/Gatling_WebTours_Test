@@ -14,23 +14,9 @@ class WebToursTest2 extends Simulation {
 		.baseUrl("http://" + domain)
 
   val csvFeederLoginDetails = csv("data/loginDetails.csv").circular
-  val csvDepartFeeder = csv("data/depart.csv").random
-  val cvsSeatPrefFeeder = csv("data/seatingPreference.csv").random
-  val csvSeatTypeFeeder = csv("data/seatType.csv").random
-  val csvArriveFeeder = csv("data/arrive.csv").random
-  val csvCustomerFeeder = csv("data/customer.csv").queue
-
-  val rnd = new Random()
-
-  def randomString(length: Int): String = {
-    rnd.alphanumeric.filter(_.isLetter).take(length).mkString
-  }
-
-  val initSession = exec(flushCookieJar)
-    .exec(session => session.set("randomNumber", rnd.nextInt))
-    .exec(session => session.set("customerLoggedIn", false))
-    .exec(addCookie(Cookie("sessionId", randomString(10)).withDomain(domain)))
-    .exec { session => println(session); session }
+  val csvDepartFeeder = csv("data/depart.csv").circular
+  val csvCustomerFeeder = csv("data/customer.csv").circular
+  val csvOutboundFlightFeeder = csv("data/outboundFlight1.csv").circular
 
   object HomePage {
     def mainPage = {
@@ -39,14 +25,14 @@ class WebToursTest2 extends Simulation {
         .check(status.is(200))
         .check(regex("<title>Web Tours</title>").exists)
         .resources(
-          http("request_1")
+          http("Header Home Page")
             .get("/WebTours/header.html"),
-          http("request_2")
+          http("Sighoff True")
             .get("/cgi-bin/welcome.pl?signOff=true"),
           http("Login Page")
             .get("/cgi-bin/nav.pl?in=home")
             .check(regex("""value=\"(.*?)\"""").exists.saveAs("SessionId")),
-          http("request_4")
+          http("Home Page")
             .get("/WebTours/home.html")))
     }
   }
@@ -61,13 +47,13 @@ class WebToursTest2 extends Simulation {
             .formParam("userSession", "#{SessionId}")
             .formParam("username", "#{username}")
             .formParam("password", "#{password}")
-            .formParam("login.x", "57")
-            .formParam("login.y", "11")
+            .formParam("login.x", "#{loginx}")
+            .formParam("login.y", "#{loginy}")
             .formParam("JSFormSubmit", "off")
             .resources(
-              http("request_6")
+              http("Menu Home")
                 .get("/cgi-bin/nav.pl?page=menu&in=home"),
-              http("request_7")
+              http("Login True")
                 .get("/cgi-bin/login.pl?intro=true")
             )
         )
@@ -78,76 +64,66 @@ class WebToursTest2 extends Simulation {
       exec(http("Flights Page Open")
             .get("/cgi-bin/welcome.pl?page=search")
             .resources(
-              http("request_9")
+              http("Menu Flights")
                 .get("/cgi-bin/nav.pl?page=menu&in=flights"),
               http("Find Flight")
                 .get("/cgi-bin/reservations.pl?page=welcome")
-                .check(regex("""option value=\"(.*?)\"""").exists.saveAs("city"))
-                .check(regex("""seatPref\" value=\"(.*?)\"""").exists.saveAs("seatPref"))
-                .check(regex("""seatType\" value=\"(.*?)\"""").exists.saveAs("seatType"))
             )
         )
     }
     def select = {
-      exec(view).
-      exec(http("Find Flight")
-          //.get("/cgi-bin/nav.pl?page=menu&in=home")
-          .get("/cgi-bin/reservations.pl")
-        )
+      feed(csvDepartFeeder)
         .exec(http("Reserve Flight")
           .post("/cgi-bin/reservations.pl")
           .formParam("advanceDiscount", "0")
-          .formParam("depart", "#{city}")
+          .formParam("depart", "#{depart}")
           .formParam("departDate", "10/11/2023")
-          .formParam("arrive", "#{city}")
+          .formParam("arrive", "#{arrive}")
           .formParam("returnDate", "10/12/2023")
-          .formParam("numPassengers", "1")
+          .formParam("numPassengers", "#{numPassengers}")
           .formParam("seatPref", "#{seatPref}")
           .formParam("seatType", "#{seatType}")
-          .formParam("findFlights.x", "42")
-          .formParam("findFlights.y", "15")
+          .formParam("findFlights.x", "#{findFlightsx}")
+          .formParam("findFlights.y", "#{findFlightsy}")
           .formParam(".cgifields", "roundtrip")
           .formParam(".cgifields", "seatType")
           .formParam(".cgifields", "seatPref"))
     }
     def confirm = {
-    //  exec(http("Confirm Flight")
-      //  .get("/cgi-bin/reservations.pl?page=welcome")
-       // .check(regex("""outboundFlight\" value=\"\d\d\d;\d\d\d;\d\d\/\d\d\/\d\d\d\d\"""").exists.saveAs("outboundFlight"))
-    //  )
-      exec(
-        http("Confirm Flight")
+        feed(csvOutboundFlightFeeder)
+       .exec(
+         http("Confirm Flight")
           .post("/cgi-bin/reservations.pl")
-          .formParam("outboundFlight", "243;129;10/11/2023")
-          .formParam("numPassengers", "1")
+          .formParam("outboundFlight", "#{outboundFlight}")
+          .formParam("numPassengers", "#{numPassengers}")
           .formParam("advanceDiscount", "0")
           .formParam("seatType", "#{seatType}")
           .formParam("seatPref", "#{seatPref}")
-          .formParam("reserveFlights.x", "60")
-          .formParam("reserveFlights.y", "9"))
+          .formParam("reserveFlights.x", "#{reserveFlightsx}")
+          .formParam("reserveFlights.y", "#{reserveFlightsy}"))
     }
     def pay = {
       feed(csvCustomerFeeder)
-      http("Pay for Flight")
+      .exec(http("Pay for Flight")
         .post("/cgi-bin/reservations.pl")
         .formParam("firstName", "#{firstName}")
         .formParam("lastName", "#{lastName}")
-        .formParam("address1", "Pushkinskaya 179")
-        .formParam("address2", "Kazan")
-        .formParam("pass1", "Jojo Bean")
-        .formParam("creditCard", "987654321")
-        .formParam("expDate", "10/24")
+        .formParam("address1", "#{address1}")
+        .formParam("address2", "#{address2}")
+        .formParam("pass1", "#{pass1}")
+        .formParam("creditCard", "#{creditCard}")
+        .formParam("expDate", "#{expDate}")
         .formParam("oldCCOption", "")
         .formParam("numPassengers", "1")
         .formParam("seatType", "#{seatType}")
         .formParam("seatPref", "#{seatPref}")
-        .formParam("outboundFlight", "243;129;10/11/2023")
+        .formParam("outboundFlight", "#{outboundFlight}")
         .formParam("advanceDiscount", "0")
         .formParam("returnFlight", "")
         .formParam("JSFormSubmit", "off")
-        .formParam("buyFlights.x", "35")
-        .formParam("buyFlights.y", "6")
-        .formParam(".cgifields", "saveCC")
+        .formParam("buyFlights.x", "#{buyFlightsx}")
+        .formParam("buyFlights.y", "#{buyFlightsy}")
+        .formParam(".cgifields", "saveCC"))
     }
   }
   object Logout {
@@ -155,9 +131,9 @@ class WebToursTest2 extends Simulation {
       exec(http("User SignOff")
         .get("/cgi-bin/welcome.pl?signOff=1")
         .resources(
-          http("request_15")
+          http("Login Page")
             .get("/cgi-bin/nav.pl?in=home"),
-          http("request_16")
+          http("Home Page")
             .get("/WebTours/home.html")
         )
       )
@@ -165,7 +141,6 @@ class WebToursTest2 extends Simulation {
   }
 
   val scn = scenario("WebToursTest2")
-    .exec(initSession)
     .exec(HomePage.mainPage)
     .pause(2)
     .exec(Customer.login)

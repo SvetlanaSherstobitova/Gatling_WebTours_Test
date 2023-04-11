@@ -1,2 +1,6 @@
-firstName, lastName, address1, address2, pass1, creditCard, expDate
-Jojo, Bean, Pushkinskaya 179, Kazan, Jojo Bean, 987654321, 10/24
+firstName,lastName, address1,address2,pass1,creditCard,expDate,buyFlightsx,buyFlightsy
+Ivan,Vasiliev,Lenina 179,Kazan,Ivan Vasiliev,1234567890,10/25,1,2
+Liam,Smith,Nakhimovsky Prospekt 10,Moscow,5555555555555,11/25,3,4
+Olivia,Johnson,Pushkinskaya,11,Ekaterinburg,4444444444444,12/26,5,6
+Noah,Williams,New Arbat Avenue 67,Moscow,333333333333,01/26,7,8
+Emma,Brown,Petrova 19,Tumen,2222222222222,03/25,9.19

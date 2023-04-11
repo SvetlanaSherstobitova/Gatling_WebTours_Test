@@ -1,11 +1,11 @@
-depart
-Denver
-Frankfurt
-London
-Los Angeles
-Paris
-Portland
-San Francisco
-Seattle
-Sydney
-Zurich
+depart,arrive,seatType,seatPref,findFlightsx,findFlightsy,numPassengers
+Frankfurt,Denver,First,Aisle,29,4,1
+London,Frankfurt,Business,Window,28,6,2
+Los Angeles,London,Coach,None,15,7,3
+Paris,Los Angeles,First,Aisle,12,9,4
+Portland,Paris,Business,Window,11,14,5
+San Francisco,Portland,Coach,None,26,3,6
+Seattle,San Francisco,First,Aisle,25,2,7
+Sydney,Seattle,Business,Window,22,8,8
+Zurich,Sydney,Coach,None,24,9,9
+Denver,Zurich,Business,Window,23,1,5
