@@ -1,11 +1,11 @@
-depart,arrive,seatType,seatPref,findFlightsx,findFlightsy,numPassengers
-Frankfurt,Denver,First,Aisle,29,4,1б
-London,Frankfurt,Business,Window,28,6,2
-Los Angeles,London,Coach,None,15,7,3
-Paris,Los Angeles,First,Aisle,12,9,4
-Portland,Paris,Business,Window,11,14,5
-San Francisco,Portland,Coach,None,26,3,6
-Seattle,San Francisco,First,Aisle,25,2,7
-Sydney,Seattle,Business,Window,22,8,8
-Zurich,Sydney,Coach,None,24,9,9
-Denver,Zurich,Business,Window,23,1,5
+depart,arrive,seatType,seatPref,findFlightsx,findFlightsy,numPassengers,reserveFlightsx,reserveFlightsy
+Denver,Frankfurt,First,Aisle,29,4,1б,34,1
+London,Frankfurt,Business,Window,28,6,2,1,32
+Los Angeles,London,Coach,None,15,7,3,54,3
+Paris,Los Angeles,First,Aisle,12,9,4,2,14
+Portland,Paris,Business,Window,11,14,5,12,31
+San Francisco,Portland,Coach,None,26,3,6,3,34
+Seattle,San Francisco,First,Aisle,25,2,7,4,65
+Sydney,Seattle,Business,Window,22,8,8,32,17
+Zurich,Sydney,Coach,None,24,9,9,65,37
+Denver,Zurich,Business,Window,23,1,5,23,19

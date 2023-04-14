@@ -1,13 +1,10 @@
 
-import scala.concurrent.duration._
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import io.gatling.jdbc.Predef._
 
+import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit.DAYS
 import scala.util.Random
-
 
 class WebToursTest2 extends Simulation {
 
@@ -20,11 +17,15 @@ class WebToursTest2 extends Simulation {
   val csvDepartFeeder = csv("data/depart.csv").circular
   val csvCustomerFeeder = csv("data/customer.csv").circular
   val csvOutboundFlightFeeder = csv("data/outboundFlight1.csv").circular
+  val inputFormat = new SimpleDateFormat("yyyy-MM-dd")
+  val outputFormat = new SimpleDateFormat("MM/dd/yyyy")
 
   val start = LocalDate.of(2023, 5, 1)
   val end   = LocalDate.of(2023, 6, 29)
-  val departDate = LocalDate.ofEpochDay(Random.between(start.toEpochDay, end.toEpochDay))
-  val returnDate = LocalDate.ofEpochDay(Random.between(start.toEpochDay+1, end.toEpochDay+1))
+
+  val departDate = outputFormat.format(inputFormat.parse(LocalDate.ofEpochDay(Random.between(start.toEpochDay, end.toEpochDay)).toString))
+  val returnDate = outputFormat.format(inputFormat.parse(LocalDate.ofEpochDay(Random.between(start.toEpochDay + 1, end.toEpochDay + 1)).toString))
+
   object HomePage {
     def mainPage = {
       exec(http("Load Home Page")
@@ -38,7 +39,7 @@ class WebToursTest2 extends Simulation {
             .get("/cgi-bin/welcome.pl?signOff=true"),
           http("Login Page")
             .get("/cgi-bin/nav.pl?in=home")
-            .check(regex("""value=\"(.*?)\"""").exists.saveAs("SessionId")),
+            .check(regex("""name="userSession" value=\"(.*?)\"""").exists.saveAs("SessionId")),
           http("Home Page")
             .get("/WebTours/home.html")))
     }
@@ -82,6 +83,17 @@ class WebToursTest2 extends Simulation {
       feed(csvDepartFeeder)
         .exec(http("Reserve Flight")
           .post("/cgi-bin/reservations.pl")
+          .check(
+           substring("Flight").count.saveAs("FlightCount"),
+            bodyString.saveAs("ReserveFlightResponse"),
+            css("input[name='outboundFlight']", "value").saveAs("outboundFlight")
+
+            // Working options!
+            // css("input[name='outboundFlight']", "value").saveAs("outboundFlight")
+            // regex("""name="outboundFlight" value=\"(.*?)\"""").exists.saveAs("outboundFlight"),
+            // regex("name=\"outboundFlight\" value=\"(.*?)\"").exists.saveAs("outboundFlight")
+          )
+
           .formParam("advanceDiscount", "0")
           .formParam("depart", "#{depart}")
           .formParam("departDate", departDate)
@@ -95,11 +107,14 @@ class WebToursTest2 extends Simulation {
           .formParam(".cgifields", "roundtrip")
           .formParam(".cgifields", "seatType")
           .formParam(".cgifields", "seatPref"))
+//        .exec { session =>
+//          println(" Flight: --> " + session("FlightCount").as[String])
+//          println(" ReserveFlightResponse: --> " + session("ReserveFlightResponse").as[String])
+//          session
+//        }
     }
     def confirm = {
-        feed(csvOutboundFlightFeeder)
-       .exec(
-         http("Confirm Flight")
+       exec(http("Confirm Flight")
           .post("/cgi-bin/reservations.pl")
           .formParam("outboundFlight", "#{outboundFlight}")
           .formParam("numPassengers", "#{numPassengers}")
@@ -121,7 +136,7 @@ class WebToursTest2 extends Simulation {
         .formParam("creditCard", "#{creditCard}")
         .formParam("expDate", "#{expDate}")
         .formParam("oldCCOption", "")
-        .formParam("numPassengers", "1")
+        .formParam("numPassengers", "#{numPassengers}")
         .formParam("seatType", "#{seatType}")
         .formParam("seatPref", "#{seatPref}")
         .formParam("outboundFlight", "#{outboundFlight}")
@@ -151,6 +166,8 @@ class WebToursTest2 extends Simulation {
     .exec(HomePage.mainPage)
     .pause(2)
     .exec(Customer.login)
+    .pause(2)
+    .exec(Flight.view)
     .pause(2)
     .exec(Flight.select)
     .pause(2)
